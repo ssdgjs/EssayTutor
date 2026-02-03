@@ -1,5 +1,27 @@
 import dotenv from 'dotenv';
-dotenv.config({ path: `${process.cwd()}/.env` });
+import path from 'path';
+
+// Try multiple paths for .env file
+const possiblePaths = [
+  path.resolve(process.cwd(), '.env'),
+  path.resolve(process.cwd(), '../.env'),
+  path.resolve(__dirname, '../../.env'),
+  path.resolve(__dirname, '../../../.env'),
+];
+
+let envLoaded = false;
+for (const envPath of possiblePaths) {
+  const result = dotenv.config({ path: envPath });
+  if (!result.error) {
+    envLoaded = true;
+    console.log(`✅ Loaded .env from: ${envPath}`);
+    break;
+  }
+}
+
+if (!envLoaded) {
+  console.log('⚠️ No .env file found, using environment variables');
+}
 
 export const config = {
   port: parseInt(process.env.PORT || '3001', 10),

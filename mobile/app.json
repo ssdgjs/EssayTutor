@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "AsseyTutor",
+    "slug": "asseytutor",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.asseytutor.app"
+    },
+    "android": {
+      "package": "com.asseytutor.app"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "experiments": {
+      "tsx": true,
+      "relativePathResolution": "nodeModules"
+    },
+    "extra": {
+      "apiUrl": "http://localhost:3001"
+    }
+  }
+}

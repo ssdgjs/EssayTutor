@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL") 
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  displayName   String
+  role          String   @default("student")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  rubrics       Rubric[]
+  essays        Essay[]
+  achievements  UserAchievement[]
+  userLevel     UserLevel?
+
+  @@map("users")
+}
+
+model Rubric {
+  id           String   @id @default(uuid())
+  userId       String
+  name         String
+  description  String
+  scene        String   @default("custom")
+  isDefault    Boolean  @default(false)
+  status       String   @default("active")
+  dimensions   String
+  customPrompt String?  // 用户自定义的AI提示词
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  essays       Essay[]
+
+  @@map("rubrics")
+}
+
+model Essay {
+  id          String   @id @default(uuid())
+  userId      String
+  rubricId    String
+  title       String?
+  content     String
+  source      String   @default("text")
+  photoUrl    String?
+  status      String   @default("pending")
+  versionNumber Int    @default(1)
+  parentId    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rubric      Rubric   @relation(fields: [rubricId], references: [id])
+  result      GradingResult?
+
+  @@map("essays")
+}
+
+model GradingResult {
+  id              String   @id @default(uuid())
+  essayId         String   @unique
+  status          String   @default("pending")
+  overallScore    Int
+  maxScore        Int      @default(100)
+  dimensionScores String
+  strengths       String
+  improvements    String
+  comments        String?
+  overallFeedback String
+  aiModel         String
+  processingTime  Int?
+  createdAt       DateTime @default(now())
+
+  essay           Essay    @relation(fields: [essayId], references: [id], onDelete: Cascade)
+
+  @@map("grading_results")
+}
+
+model UserAchievement {
+  id            String   @id @default(uuid())
+  userId        String
+  achievementId String
+  achievedAt    DateTime @default(now())
+  progress      Int      @default(0)
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+model UserLevel {
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  currentLevel Int      @default(1)
+  currentXP    Int      @default(0)
+  totalXP      Int      @default(0)
+  title        String   @default("写作新手")
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_levels")
+}

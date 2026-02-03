@@ -42,8 +42,9 @@ app.use((req, res) => {
 
 // Only start server if not in test mode
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(config.port, () => {
-    console.log(`🚀 Server running on port ${config.port} (${config.nodeEnv})`);
+  const host = process.env.HOST || '0.0.0.0';
+  app.listen(config.port, host, () => {
+    console.log(`🚀 Server running on http://${host}:${config.port} (${config.nodeEnv})`);
   });
 }
 

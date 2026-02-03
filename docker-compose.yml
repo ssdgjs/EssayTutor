@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: essaytutor-server
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DATABASE_URL=file:./data.db
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-change-in-production}
+      - ZHIPU_API_KEY=${ZHIPU_API_KEY}
+      - ARK_API_KEY=${ARK_API_KEY}
+    volumes:
+      - server_data:/app/prisma/data
+    restart: unless-stopped
+
+volumes:
+  server_data:
